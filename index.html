@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1730">
+  <meta name="description" content="東野高校バスケットボール部の公式サイト。試合結果、活動報告、活動予定、部活動体験会などを掲載します。">
+  <title>東野高校バスケットボール部 | 百折不撓</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#home" aria-label="トップページ">
+      <span class="brand-mark">H</span>
+      <span><strong>HIGASHINO</strong><small>BASKETBALL CLUB</small></span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="メニューを開く" aria-expanded="false">☰</button>
+    <nav id="mainNav" aria-label="メインメニュー">
+      <a href="#news">NEWS</a><a href="#results">RESULTS</a><a href="#schedule">SCHEDULE</a><a href="#team">TEAM</a><a href="#media">MEDIA</a><a href="#join">JOIN US</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <p class="eyebrow">HIGASHINO HIGH SCHOOL</p>
+        <p class="hero-kicker">BOUNCE BACK. FIGHT ON.</p>
+        <h1>百折不撓<span>折れるな挑め。</span></h1>
+        <p class="hero-copy">一つひとつの練習を、成長につなげる。<br>仲間とともに、次の一歩へ。</p>
+        <a class="button button-primary" href="#results">試合結果を見る <span>↗</span></a>
+      </div>
+      <div class="hero-stamp"><span>HIGASHINO</span><strong>BB</strong><span>EST. TEAM SPIRIT</span></div>
+      <div class="hero-bottom"><span>DISCIPLINE · COURAGE · TEAMWORK</span><span>OFFICIAL TEAM SITE</span></div>
+    </section>
+
+    <section class="quick-links" aria-label="主要コンテンツ">
+      <a href="#results"><span class="quick-number">01</span><span><strong>GAME RESULTS</strong><small>試合結果</small></span><b>↗</b></a>
+      <a href="#schedule"><span class="quick-number">02</span><span><strong>SCHEDULE</strong><small>活動予定</small></span><b>↗</b></a>
+      <a href="#join"><span class="quick-number">03</span><span><strong>JOIN US</strong><small>体験・見学</small></span><b>↗</b></a>
+    </section>
+
+    <section class="section" id="news">
+      <div class="section-heading"><div><p class="eyebrow blue">LATEST UPDATES</p><h2>NEWS <span>お知らせ</span></h2></div><p class="section-note">チームの最新情報をお届けします。</p></div>
+      <div class="news-grid" id="newsList"></div>
+    </section>
+
+    <section class="results-section" id="results">
+      <div class="section results-inner">
+        <div class="section-heading"><div><p class="eyebrow blue">ON THE COURT</p><h2>GAME RESULTS <span>試合結果</span></h2></div><p class="section-note">一試合ごとの経験を、次の成長へ。</p></div>
+        <div class="results-list" id="resultsList"></div>
+        <p class="data-note">※掲載内容は随時更新します。大会名・スコア等に誤りがある場合は顧問までお知らせください。</p>
+      </div>
+    </section>
+
+    <section class="section" id="schedule">
+      <div class="section-heading"><div><p class="eyebrow blue">MARK YOUR CALENDAR</p><h2>SCHEDULE <span>活動予定</span></h2></div><p class="section-note">大会・練習試合などの予定を掲載します。</p></div>
+      <div class="schedule-list" id="scheduleList"></div>
+      <p class="data-note">※予定は変更になる場合があります。最新情報をご確認ください。</p>
+    </section>
+
+    <section class="team-section" id="team">
+      <div class="team-copy"><p class="eyebrow">OUR PHILOSOPHY</p><h2>百折不撓<br><span>折れるな挑め。</span></h2><p>勝敗だけでなく、日々の取り組みや仲間への姿勢を大切にする。基本を徹底し、困難な場面でも挑戦を続けるチームを目指します。</p><p class="team-motto">DISCIPLINE / COURAGE / TEAMWORK</p></div>
+      <div class="team-visual"><div class="court-lines"></div><div class="team-big-type">NEVER<br>BACK<br>DOWN.</div><div class="team-circle">H<br><small>BB CLUB</small></div></div>
+    </section>
+
+    <section class="section" id="media">
+      <div class="section-heading"><div><p class="eyebrow blue">WATCH & FOLLOW</p><h2>MEDIA <span>動画・SNS</span></h2></div><p class="section-note">試合映像や日々の活動をチェック。</p></div>
+      <div class="media-cards">
+        <a class="media-card" id="youtubeLink" href="#" target="_blank" rel="noopener"><span class="media-icon">▶</span><span><strong>YouTube</strong><small>試合動画・チーム映像</small></span><b>↗</b></a>
+        <a class="media-card" id="instagramLink" href="#" target="_blank" rel="noopener"><span class="media-icon">◎</span><span><strong>Instagram</strong><small>日々の活動・大会報告</small></span><b>↗</b></a>
+      </div>
+    </section>
+
+    <section class="join-section" id="join">
+      <div><p class="eyebrow">FOR JUNIOR HIGH SCHOOL STUDENTS</p><h2>次に挑戦するのは、<br>君だ。</h2><p>部活動体験会・見学に関する案内はこちら。日程や申込方法を確認のうえ、ご参加ください。</p></div>
+      <a class="button button-light" id="experienceLink" href="mailto:REPLACE_WITH_SCHOOL_CONTACT">体験会・見学について <span>↗</span></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#home"><span class="brand-mark">H</span><span><strong>HIGASHINO</strong><small>BASKETBALL CLUB</small></span></a>
+    <p>東野高校バスケットボール部 公式サイト</p>
+    <small>© <span id="year"></span> HIGASHINO BASKETBALL CLUB</small>
+  </footer>
+  <script src="content.js"></script>
+  <script src="sheet-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
