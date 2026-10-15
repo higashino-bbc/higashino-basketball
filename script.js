@@ -30,20 +30,27 @@
     });
   }
 
-  async function loadSheet(key) {
-    const url = clean(feeds[key]);
-    if (!url) return null;
-    try {
-      const response = await fetch(url, { cache: "no-store" });
-      if (!response.ok) throw new Error("HTTP " + response.status);
-      const text = await response.text();
-      if (/^\s*</.test(text)) throw new Error("CSVではない応答");
-      return parseCSV(text);
-    } catch (error) {
-      console.warn("Google Sheets feed unavailable:", key, error);
-      return null;
+ async function loadSheet(key) {
+  const url = clean(feeds[key]);
+  if (!url) return null;
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const buffer = await response.arrayBuffer();
+    let text = new TextDecoder("utf-8").decode(buffer);
+
+    if (text.includes("\uFFFD")) {
+      text = new TextDecoder("shift_jis").decode(buffer);
     }
+
+    if (/^\s*</.test(text)) throw new Error("CSVではない応答");
+    return parseCSV(text);
+  } catch (error) {
+    console.warn("Google Sheets feed unavailable:", key, error);
+    return null;
   }
+}
 
   const renderNews = (items) => {
     $("#newsList").innerHTML = (items || []).filter((x) => !["no", "非表示"].includes(clean(x.show).toLowerCase())).map((item) => `
