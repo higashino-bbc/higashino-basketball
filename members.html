@@ -148,6 +148,35 @@
       </div>
 
       <p class="notice">リンク先は、顧問が設定した資料・動画を開きます。</p>
+
+<div id="rulesContent" class="panel hidden">
+  <h2>盈進学園東野高等学校男女バスケットボール部</h2>
+  <h3>～ 入部誓約書 ～</h3>
+
+  <p>◆ 大人として、当たり前のことを徹底できる人間に成長をすること。</p>
+  <p>◆ 社会に出て通用する人材を目指し、人間力の向上に努めること。</p>
+
+  <h3>入部条件</h3>
+  <ol>
+    <li>部活動を休まず、引退まで継続して向上意欲をもって取り組める者</li>
+    <li>身の回りで支えてくれている人に、礼儀正しく挨拶や感謝ができる者</li>
+    <li>指導の対象となるような言動は慎み、周囲に気を配ることができる者</li>
+    <li>試験2週間前～1週間前にバスケットボール部で行う自主学習会に出席できる者</li>
+  </ol>
+
+  <h3>公式戦ベンチ入りについて</h3>
+  <ol>
+    <li>部活動としてのすべての活動に積極的に参加をしている者</li>
+    <li>練習の中でチームのために貢献をしようと行動している者</li>
+  </ol>
+
+  <p class="notice">
+    ※ 以上の項目を満たしていても、人数の関係でベンチに入れない場合もある。
+  </p>
+
+  <button type="button" id="backToMenuButton">メニューに戻る</button>
+</div>
+
       <button type="button" id="logoutButton">ログアウト</button>
     </section>
 
@@ -185,27 +214,32 @@
     });
 
     // リンク先は、設定後に有効になります。
-    const memberLinks = {
-      rules: "",
-      schedule: "",
-      practice: "",
-      games: ""
-    };
+ 
+const memberLinks = {
+  rules: "",
+  schedule: "",
+  practice: "",
+  games: ""
+};
 
-    document.querySelectorAll("[data-link]").forEach(function(link) {
-      const url = memberLinks[link.dataset.link];
+document.querySelectorAll("[data-link]").forEach(function(link) {
+  link.addEventListener("click", function(event) {
+    event.preventDefault();
 
-      if (url) {
-        link.href = url;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-      } else {
-        link.addEventListener("click", function(event) {
-          event.preventDefault();
-          alert("このリンクはまだ設定されていません。顧問に確認してください。");
-        });
-      }
-    });
+    if (link.dataset.link === "rules") {
+      document.getElementById("membersPanel").classList.add("hidden");
+      document.getElementById("rulesContent").classList.remove("hidden");
+    } else {
+      alert("このリンクはまだ設定されていません。顧問に確認してください。");
+    }
+  });
+});
+
+document.getElementById("backToMenuButton").addEventListener("click", function() {
+  document.getElementById("rulesContent").classList.add("hidden");
+  document.getElementById("membersPanel").classList.remove("hidden");
+});
+
   </script>
 </body>
 </html>
