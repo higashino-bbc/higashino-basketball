@@ -35,13 +35,15 @@
     padding: 8px;
   }
 }
+
 /* トップ画面のエンブレムサイズ調整 */
 .hero-stamp {
-  width: 1000px !important;
-  height: 1000px !important;
+  width: 360px !important;
+  height: 360px !important;
 }
 
 .hero-stamp img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -50,7 +52,7 @@
 /* スマートフォン用 */
 @media (max-width: 760px) {
   .hero-stamp {
-    width: 150px !important;
-    height: 150px !important;
+    width: 180px !important;
+    height: 180px !important;
   }
 }
