@@ -1,1 +1,212 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>部員専用ページ | HIGASHINO BASKETBALL CLUB</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Noto Sans JP", sans-serif;
+      background: #f1f5f9;
+      color: #172b45;
+    }
+
+    header {
+      background: #102744;
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    header p {
+      color: #b8d9ff;
+      letter-spacing: .15em;
+      font-size: 12px;
+    }
+
+    main {
+      width: min(680px, 92%);
+      margin: 32px auto;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 4px 18px #10274412;
+      margin-bottom: 20px;
+    }
+
+    h1 { font-size: 25px; margin: 0; }
+    h2 { font-size: 19px; margin-top: 0; }
+
+    input, button {
+      width: 100%;
+      padding: 13px;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+
+    input {
+      border: 1px solid #bdc9d8;
+      margin: 8px 0 12px;
+    }
+
+    button {
+      border: 0;
+      background: #1764a5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .links {
+      display: grid;
+      gap: 12px;
+    }
+
+    .link-button {
+      display: block;
+      padding: 17px;
+      border-radius: 9px;
+      background: #102744;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link-button span {
+      display: block;
+      color: #b8d9ff;
+      font-size: 12px;
+      margin-top: 5px;
+      font-weight: normal;
+    }
+
+    .notice { color: #64748b; font-size: 13px; }
+    .error { color: #c62828; font-size: 14px; }
+    .hidden { display: none; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p>HIGASHINO BASKETBALL CLUB</p>
+    <h1>部員専用ページ</h1>
+    <p>MEMBERS ONLY</p>
+  </header>
+
+  <main>
+    <section class="panel" id="loginPanel">
+      <h2>パスワードを入力</h2>
+      <p>部員向けの情報を確認するには、パスワードを入力してください。</p>
+      <form id="loginForm">
+        <input
+          type="password"
+          id="password"
+          placeholder="パスワード"
+          autocomplete="current-password"
+          required
+        >
+        <button type="submit">ログイン</button>
+      </form>
+      <p id="errorMessage" class="error" role="alert"></p>
+      <p class="notice">パスワードが分からない場合は、顧問に確認してください。</p>
+    </section>
+
+    <section class="panel hidden" id="membersPanel">
+      <h2>部員メニュー</h2>
+      <p>必要な資料・動画を選択してください。</p>
+
+      <div class="links">
+        <a class="link-button" href="#" data-link="rules">
+          📘 部則
+          <span>部活動のルール・約束</span>
+        </a>
+        <a class="link-button" href="#" data-link="schedule">
+          📅 日程表
+          <span>練習・大会・集合時間</span>
+        </a>
+        <a class="link-button" href="#" data-link="practice">
+          🎥 練習動画
+          <span>練習メニュー・参考映像</span>
+        </a>
+        <a class="link-button" href="#" data-link="games">
+          🏀 試合動画
+          <span>試合映像・振り返り</span>
+        </a>
+      </div>
+
+      <p class="notice">リンク先は、顧問が設定した資料・動画を開きます。</p>
+      <button type="button" id="logoutButton">ログアウト</button>
+    </section>
+
+    <p><a href="index.html">← ホームページに戻る</a></p>
+  </main>
+
+  <footer>HIGASHINO BASKETBALL CLUB</footer>
+
+  <script>
+    // 簡易的な閲覧制限です。ソースコードから確認できるため、
+    // 機密情報や重要な個人情報の保護には使用しないでください。
+    const CLUB_PASSWORD = "Higashino2026";
+
+    const loginPanel = document.getElementById("loginPanel");
+    const membersPanel = document.getElementById("membersPanel");
+    const errorMessage = document.getElementById("errorMessage");
+
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      if (document.getElementById("password").value === CLUB_PASSWORD) {
+        loginPanel.classList.add("hidden");
+        membersPanel.classList.remove("hidden");
+        errorMessage.textContent = "";
+        document.getElementById("password").value = "";
+      } else {
+        errorMessage.textContent = "パスワードが違います。もう一度入力してください。";
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", function() {
+      membersPanel.classList.add("hidden");
+      loginPanel.classList.remove("hidden");
+      document.getElementById("password").value = "";
+    });
+
+    // リンク先は、設定後に有効になります。
+    const memberLinks = {
+      rules: "",
+      schedule: "",
+      practice: "",
+      games: ""
+    };
+
+    document.querySelectorAll("[data-link]").forEach(function(link) {
+      const url = memberLinks[link.dataset.link];
+
+      if (url) {
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      } else {
+        link.addEventListener("click", function(event) {
+          event.preventDefault();
+          alert("このリンクはまだ設定されていません。顧問に確認してください。");
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+
