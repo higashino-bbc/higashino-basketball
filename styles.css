@@ -35,3 +35,22 @@
     padding: 8px;
   }
 }
+/* トップ画面のエンブレムサイズ調整 */
+.hero-stamp {
+  width: 280px !important;
+  height: 280px !important;
+}
+
+.hero-stamp img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* スマートフォン用 */
+@media (max-width: 760px) {
+  .hero-stamp {
+    width: 150px !important;
+    height: 150px !important;
+  }
+}
