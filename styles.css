@@ -76,3 +76,10 @@
   display: none !important;
   content: none !important;
 }
+/* フッターのエンブレム */
+.footer-brand .brand-emblem {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
