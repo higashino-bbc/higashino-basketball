@@ -52,7 +52,7 @@
 /* スマートフォン用 */
 @media (max-width: 760px) {
   .hero-stamp {
-    width: 540px !important;
-    height: 540px !important;
+    width: 360px !important;
+    height: 360px !important;
   }
 }
