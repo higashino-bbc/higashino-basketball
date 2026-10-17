@@ -59,6 +59,6 @@
 /* PC版ホームページのエンブレム位置調整 */
 @media (min-width: 761px) {
   .hero-stamp {
-    transform: translateY(-80px);
+    transform: translateY(-120px);
   }
 }
