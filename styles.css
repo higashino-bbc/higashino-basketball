@@ -56,3 +56,9 @@
     height: 360px !important;
   }
 }
+/* PC版ホームページのエンブレム位置調整 */
+@media (min-width: 761px) {
+  .hero-stamp {
+    transform: translateY(-80px);
+  }
+}
