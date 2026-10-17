@@ -38,8 +38,8 @@
 
 /* トップ画面のエンブレムサイズ調整 */
 .hero-stamp {
-  width: 1080px !important;
-  height: 1080px !important;
+  width: 360px !important;
+  height: 360px !important;
 }
 
 .hero-stamp img {
