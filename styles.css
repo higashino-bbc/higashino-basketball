@@ -62,3 +62,16 @@
     transform: translateY(-120px);
   }
 }
+/* トップページのエンブレム周囲の円形装飾を非表示 */
+.hero-stamp {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.hero-stamp::before,
+.hero-stamp::after {
+  display: none !important;
+  content: none !important;
+}
