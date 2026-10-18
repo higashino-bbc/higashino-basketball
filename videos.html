@@ -1,0 +1,194 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1730">
+  <meta name="description" content="東野高校バスケットボール部の部員向け練習動画一覧です。">
+  <title>練習動画 | 東野高校バスケットボール部</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .videos-page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 72px;
+    }
+    .videos-page h1 {
+      margin-bottom: 12px;
+    }
+    .video-category {
+      margin-top: 36px;
+    }
+    .video-category h2 {
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+    }
+    .video-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .video-item {
+      padding: 20px;
+      border: 1px solid rgba(109, 169, 232, 0.4);
+      border-radius: 12px;
+      background: rgba(16, 39, 68, 0.05);
+    }
+    .video-item h3 {
+      margin: 0 0 10px;
+    }
+    .video-item p {
+      line-height: 1.7;
+    }
+    .video-item a {
+      display: inline-block;
+      margin-top: 8px;
+      font-weight: bold;
+      color: #2466a8;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 32px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="members.html">
+      <img class="brand-emblem" src="東野エンブレム.png" alt="東野高校バスケットボール部エンブレム">
+      <span><strong>HIGASHINO</strong><small>BASKETBALL CLUB</small></span>
+    </a>
+  </header>
+
+  <main class="videos-page">
+    <p class="eyebrow blue">PRACTICE LIBRARY</p>
+    <h1>練習動画</h1>
+    <p>練習メニューや参考映像を確認できます。動画名を選択して視聴してください。</p>
+
+    <div id="videoMessage" role="status">動画を読み込んでいます。</div>
+    <div id="videoCategories"></div>
+
+    <a class="back-link" href="members.html">← 部員専用ページに戻る</a>
+  </main>
+
+  <script src="sheet-config.js"></script>
+  <script>
+    const container = document.getElementById("videoCategories");
+    const message = document.getElementById("videoMessage");
+    const feedUrl = window.SHEET_FEEDS?.videos;
+
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], cell = "", quoted = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (quoted) {
+          if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+          else if (c === '"') quoted = false;
+          else cell += c;
+        } else {
+          if (c === '"') quoted = true;
+          else if (c === ",") { row.push(cell); cell = ""; }
+          else if (c === "\n") {
+            row.push(cell.replace(/\r$/, ""));
+            rows.push(row);
+            row = [];
+            cell = "";
+          } else cell += c;
+        }
+      }
+      if (cell.length || row.length) {
+        row.push(cell.replace(/\r$/, ""));
+        rows.push(row);
+      }
+      if (!rows.length) return [];
+      const headers = rows.shift().map(h => h.trim().replace(/^\uFEFF/, ""));
+      return rows.filter(r => r.some(v => v.trim() !== "")).map(r => {
+        const item = {};
+        headers.forEach((h, i) => { if (h) item[h] = (r[i] || "").trim(); });
+        return item;
+      });
+    }
+
+    function getField(item, names) {
+      for (const name of names) {
+        if (item[name]) return item[name].trim();
+      }
+      return "";
+    }
+
+    function renderVideos(items) {
+      if (!items.length) {
+        message.textContent = "動画がまだ登録されていません。";
+        return;
+      }
+
+      const groups = new Map();
+
+      items.forEach(item => {
+        const show = getField(item, ["show", "表示"]);
+        if (["no", "非表示"].includes(show.toLowerCase())) return;
+
+        const category = getField(item, ["カテゴリー", "カテゴリ", "category", "分類"]) || "その他";
+        const title = getField(item, ["動画名", "タイトル", "title", "name"]);
+        const url = getField(item, ["動画URL", "動画のURL", "URL", "url", "リンク"]);
+        const description = getField(item, ["説明", "description", "内容"]);
+
+        if (!title || !/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url)) return;
+
+        if (!groups.has(category)) groups.set(category, []);
+        groups.get(category).push({ title, url, description });
+      });
+
+      if (!groups.size) {
+        message.textContent = "表示できる動画がありません。スプレッドシートの「動画名」と「動画URL」の列を確認してください。";
+        return;
+      }
+
+      message.textContent = "";
+      container.innerHTML = [...groups.entries()].map(([category, videos]) => `
+        <section class="video-category">
+          <h2>${escapeHTML(category)}</h2>
+          <div class="video-list">
+            ${videos.map(video => `
+              <article class="video-item">
+                <h3>${escapeHTML(video.title)}</h3>
+                <p>${escapeHTML(video.description)}</p>
+                <a href="${escapeHTML(video.url)}" target="_blank" rel="noopener noreferrer">動画を見る ↗</a>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `).join("");
+    }
+
+    async function initVideos() {
+      if (!feedUrl) {
+        message.textContent = "動画一覧の接続設定が見つかりません。sheet-config.js の videos を確認してください。";
+        return;
+      }
+
+      try {
+        const response = await fetch(feedUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error("CSVを取得できませんでした。");
+        const text = await response.text();
+        if (/^\s*</.test(text)) throw new Error("CSVではない応答が返されました。");
+        renderVideos(parseCSV(text));
+      } catch (error) {
+        console.error(error);
+        message.textContent = "動画を読み込めませんでした。スプレッドシートの公開設定とURLを確認してください。";
+      }
+    }
+
+    initVideos();
+  </script>
+</body>
+</html>
