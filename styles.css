@@ -108,3 +108,48 @@
   height: 100%;
   object-fit: contain;
 }
+
+/* 練習動画一覧 */
+.video-section {
+  margin-top: 36px;
+}
+
+.video-section h3 {
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.video-card {
+  padding: 20px;
+  border: 1px solid rgba(109, 169, 232, 0.35);
+  border-radius: 12px;
+  background: rgba(16, 39, 68, 0.06);
+}
+
+.video-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.video-card p {
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.video-card a {
+  display: inline-block;
+  color: #2466a8;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.video-card a:hover {
+  text-decoration: underline;
+}
