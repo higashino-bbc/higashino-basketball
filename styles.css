@@ -97,3 +97,14 @@
   object-fit: contain;
   display: block;
 }
+/* チーム紹介エリアのエンブレムを約3倍に拡大 */
+.team-circle {
+  width: 300px !important;
+  height: 300px !important;
+}
+
+.team-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
