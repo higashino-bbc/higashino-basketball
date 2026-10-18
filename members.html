@@ -231,7 +231,10 @@ document.querySelectorAll("[data-link]").forEach(function(link) {
       event.preventDefault();
       document.getElementById("membersPanel").classList.add("hidden");
       document.getElementById("rulesContent").classList.remove("hidden");
-    } else if (link.dataset.link !== "schedule") {
+    } else if (
+  link.dataset.link !== "schedule" &&
+  link.dataset.link !== "practice"
+) {
       event.preventDefault();
       alert("このリンクはまだ設定されていません。顧問に確認してください。");
     }
