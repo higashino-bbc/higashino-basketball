@@ -68,6 +68,32 @@
       <article class="schedule-row"><div class="schedule-date">${escapeHTML(item.date)}</div><div class="schedule-content"><span>${escapeHTML(item.type || "INFO")}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.detail)}</p></div><div class="schedule-arrow">↗</div></article>`).join("") || '<p class="empty-state">活動予定は準備中です。</p>';
   };
 
+  const renderVideos = (items) => {
+    const container = $("#videosList");
+    if (!container) return;
+
+    container.innerHTML = (items || [])
+      .filter((item) => !["no", "非表示"].includes(clean(item.show).toLowerCase()))
+      .map((item) => {
+        const title = escapeHTML(item["動画名"] || item.title || "練習動画");
+        const url = clean(item["動画URL"] || item.url);
+        const description = escapeHTML(item["説明"] || item.description || "");
+
+        if (!/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url)) {
+          return "";
+        }
+
+        return `
+          <article class="video-card">
+            <h3>${title}</h3>
+            <p>${description}</p>
+            <a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">
+              動画を見る ↗
+            </a>
+          </article>`;
+      }).join("") || '<p class="empty-state">練習動画は準備中です。</p>';
+  };
+
   const setLink = (selector, url, fallback) => {
     const link = $(selector);
     if (!link) return;
@@ -76,13 +102,20 @@
     else { link.href = "#"; link.addEventListener("click", (event) => { event.preventDefault(); alert("リンク先は準備中です。Googleスプレッドシートの Links シートにURLを設定してください。"); }); }
   };
 
+
   async function init() {
-    const [news, results, schedule, linksRows] = await Promise.all([
-      loadSheet("news"), loadSheet("results"), loadSheet("schedule"), loadSheet("links")
+    const [news, results, schedule, linksRows, videos] = await Promise.all([
+      loadSheet("news"),
+      loadSheet("results"),
+      loadSheet("schedule"),
+      loadSheet("links"),
+      loadSheet("videos")
     ]);
+
     renderNews(news === null ? fallback.news : news);
     renderResults(results === null ? fallback.results : results);
     renderSchedule(schedule === null ? fallback.schedule : schedule);
+    renderVideos(videos === null ? (fallback.videos || []) : videos);
     const links = { ...(fallback.links || {}) };
     if (linksRows) linksRows.forEach((row) => {
       const key = clean(row.key).toLowerCase();
