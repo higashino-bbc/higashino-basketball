@@ -141,7 +141,7 @@
   🎥 練習動画
   <span>練習メニュー・参考映像</span>
 </a>
-        <a class="link-button" href="#" data-link="games">
+        <a class="link-button" href="games.html" data-link="games">
           🏀 試合動画
           <span>試合映像・振り返り</span>
         </a>
@@ -233,7 +233,8 @@ document.querySelectorAll("[data-link]").forEach(function(link) {
       document.getElementById("rulesContent").classList.remove("hidden");
     } else if (
   link.dataset.link !== "schedule" &&
-  link.dataset.link !== "practice"
+  link.dataset.link !== "practice" &&
+  link.dataset.link !== "games"
 ) {
       event.preventDefault();
       alert("このリンクはまだ設定されていません。顧問に確認してください。");
