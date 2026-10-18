@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>試合動画 | HIGASHINO BASKETBALL CLUB</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .games-page {
+      width: min(1000px, 92%);
+      margin: 32px auto;
+    }
+    .game-card {
+      background: white;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px #10274412;
+    }
+    .game-card h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+    .game-card iframe {
+      display: block;
+      width: 100%;
+      max-width: 800px;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      margin: 16px auto;
+      border: 0;
+    }
+    .back-link {
+      display: inline-block;
+      margin: 20px 0;
+    }
+    .status-message {
+      padding: 16px;
+      background: white;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p>HIGASHINO BASKETBALL CLUB</p>
+    <h1>試合動画</h1>
+    <p>GAME FILM</p>
+  </header>
+
+  <main class="games-page">
+    <a class="back-link" href="members.html">← 部員専用ページに戻る</a>
+    <p>試合映像を確認し、チームや個人の課題分析に活用してください。</p>
+
+    <div id="gamesList" class="status-message">
+      試合動画を読み込んでいます。
+    </div>
+  </main>
+
+  <script src="sheet-config.js"></script>
+  <script>
+    const csvUrl = window.SHEET_FEEDS?.games;
+    const list = document.getElementById("gamesList");
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let quoted = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '"') {
+          if (quoted && text[i + 1] === '"') {
+            cell += '"';
+            i++;
+          } else {
+            quoted = !quoted;
+          }
+        } else if (char === "," && !quoted) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !quoted) {
+          if (char === "\r" && text[i + 1] === "\n") i++;
+          row.push(cell);
+          if (row.some(value => value.trim() !== "")) rows.push(row);
+          row = [];
+          cell = "";
+        } else {
+          cell += char;
+        }
+      }
+
+      row.push(cell);
+      if (row.some(value => value.trim() !== "")) rows.push(row);
+
+      if (!rows.length) return [];
+
+      const headers = rows.shift().map(value => value.trim().replace(/^\uFEFF/, ""));
+      return rows.map(values => {
+        const item = {};
+        headers.forEach((header, index) => {
+          item[header] = (values[index] || "").trim();
+        });
+        return item;
+      });
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function getPlaylistId(url) {
+      try {
+        const parsed = new URL(url);
+        if (parsed.hostname !== "youtube.com" &&
+            parsed.hostname !== "www.youtube.com" &&
+            parsed.hostname !== "m.youtube.com") return "";
+        return parsed.searchParams.get("list") || "";
+      } catch {
+        return "";
+      }
+    }
+
+    async function loadGames() {
+      if (!csvUrl) {
+        list.textContent = "試合動画のデータ設定がまだありません。";
+        return;
+      }
+
+      try {
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error("CSVを取得できませんでした。");
+
+        const items = parseCSV(await response.text());
+        const games = items.map(item => ({
+          date: item["試合日"] || item["日付"] || "",
+          opponent: item["対戦相手"] || "",
+          url: item["プレイリストURL"] || "",
+          description: item["説明"] || ""
+        })).filter(game => game.date && getPlaylistId(game.url));
+
+        if (!games.length) {
+          list.textContent = "表示できる試合動画がありません。スプレッドシートの入力内容を確認してください。";
+          return;
+        }
+
+        list.className = "";
+        list.innerHTML = games.map(game => {
+          const playlistId = getPlaylistId(game.url);
+          const title = [game.date, game.opponent].filter(Boolean).join("｜");
+
+          return `
+            <article class="game-card">
+              <h2>${escapeHTML(title)}</h2>
+              <p>${escapeHTML(game.description)}</p>
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(playlistId)}"
+                title="${escapeHTML(title)}"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+              </iframe>
+              <p><a href="${escapeHTML(game.url)}" target="_blank" rel="noopener noreferrer">YouTubeで開く ↗</a></p>
+            </article>
+          `;
+        }).join("");
+      } catch (error) {
+        list.textContent = "試合動画を読み込めませんでした。時間をおいて再度確認してください。";
+      }
+    }
+
+    loadGames();
+  </script>
+</body>
+</html>
