@@ -144,6 +144,7 @@
         const games = items.map(item => ({
           date: item["試合日"] || item["日付"] || "",
           opponent: item["対戦相手"] || "",
+          score: item["スコア"] || "",
           url: item["プレイリストURL"] || "",
           description: item["説明"] || ""
         })).filter(game => game.date && getPlaylistId(game.url));
@@ -157,10 +158,12 @@
         list.innerHTML = games.map(game => {
           const playlistId = getPlaylistId(game.url);
           const title = [game.date, game.opponent].filter(Boolean).join("｜");
+          const scoreText = game.score ? `<p><strong>スコア：${escapeHTML(game.score)}</strong></p>` : "";
 
           return `
             <article class="game-card">
               <h2>${escapeHTML(title)}</h2>
+              ${scoreText}
               <p>${escapeHTML(game.description)}</p>
               <iframe
                 src="https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(playlistId)}"
