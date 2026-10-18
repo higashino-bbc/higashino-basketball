@@ -60,6 +60,85 @@
 
     <a class="back" href="members.html">← 部員専用ページに戻る</a>
   </main>
+  <script src="sheet-config.js"></script>
+<script>
+(async function () {
+  const list = document.getElementById("scheduleList");
+  const url = window.SHEET_FEEDS?.membersSchedule;
+
+  if (!list) return;
+
+  if (!url) {
+    list.textContent = "活動予定表の読み込み設定がありません。";
+    return;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("CSVの読み込みに失敗しました");
+
+    const csv = await response.text();
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let value = "";
+      let quoted = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '"' && quoted && text[i + 1] === '"') {
+          value += '"';
+          i++;
+        } else if (char === '"') {
+          quoted = !quoted;
+        } else if (char === "," && !quoted) {
+          row.push(value.trim());
+          value = "";
+        } else if ((char === "\n" || char === "\r") && !quoted) {
+          if (char === "\r" && text[i + 1] === "\n") i++;
+          row.push(value.trim());
+          if (row.some(cell => cell !== "")) rows.push(row);
+          row = [];
+          value = "";
+        } else {
+          value += char;
+        }
+      }
+
+      row.push(value.trim());
+      if (row.some(cell => cell !== "")) rows.push(row);
+      return rows;
+    }
+
+    const rows = parseCSV(csv);
+    list.replaceChildren();
+
+    rows.slice(1).forEach(row => {
+      const title = row[0];
+      const link = row[1];
+
+      if (!title || !link) return;
+
+      const a = document.createElement("a");
+      a.className = "schedule-link";
+      a.href = link;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = title + " ↗";
+      list.appendChild(a);
+    });
+
+    if (!list.children.length) {
+      list.textContent = "表示できる活動予定表がありません。";
+    }
+  } catch (error) {
+    console.error(error);
+    list.textContent = "活動予定表を読み込めませんでした。";
+  }
+})();
+</script>
 </body>
 </html>
 
