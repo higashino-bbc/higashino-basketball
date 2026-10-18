@@ -137,12 +137,14 @@
         const show = getField(item, ["show", "表示"]);
         if (["no", "非表示"].includes(show.toLowerCase())) return;
 
-        const category = getField(item, ["カテゴリー", "カテゴリ", "category", "分類"]) || "その他";
-        const title = getField(item, ["動画名", "タイトル", "title", "name"]);
-        const url = getField(item, ["動画URL", "動画のURL", "URL", "url", "リンク"]);
-        const description = getField(item, ["説明", "description", "内容"]);
-
+        
+        const category = "練習日別";
+        const title = getField(item, ["練習日"]);
+        const url = getField(item, ["プレイリストURL"]);
+        const description = getField(item, ["説明"]);
+        
         if (!title || !/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url)) return;
+
 
         if (!groups.has(category)) groups.set(category, []);
         groups.get(category).push({ title, url, description });
@@ -159,11 +161,23 @@
           <h2>${escapeHTML(category)}</h2>
           <div class="video-list">
             ${videos.map(video => `
+            
               <article class="video-item">
                 <h3>${escapeHTML(video.title)}</h3>
                 <p>${escapeHTML(video.description)}</p>
-                <a href="${escapeHTML(video.url)}" target="_blank" rel="noopener noreferrer">動画を見る ↗</a>
+                <iframe
+                  width="100%"
+                  height="240"
+                  src="https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(new URL(video.url).searchParams.get("list") || "")}"
+                  title="${escapeHTML(video.title)}"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen>
+                </iframe>
+                <p><a href="${escapeHTML(video.url)}" target="_blank" rel="noopener noreferrer">YouTubeで開く ↗</a></p>
               </article>
+
             `).join("")}
           </div>
         </section>
