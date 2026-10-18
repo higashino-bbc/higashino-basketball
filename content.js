@@ -17,9 +17,10 @@ window.SITE_CONTENT = {
     { date: "2026.11.上旬", type: "TOURNAMENT", title: "新人大会", detail: "1回戦 vs 入間向陽高校（日時・会場は決定後に更新）" },
     { date: "随時更新", type: "PRACTICE", title: "練習・練習試合", detail: "最新の予定は顧問からの連絡をご確認ください。" }
   ],
-  links: {
+   links: {
     youtube: "",
     instagram: "",
     experience: ""
-  }
+  },
+  videos: []
 };
