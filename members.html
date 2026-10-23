@@ -421,10 +421,30 @@ document.getElementById("backToMenuButton").addEventListener("click", function()
             .filter(Boolean)
             .join(" ｜ ");
 
-          const title = document.createElement("h3");
-          title.textContent = item.title || "お知らせ";
+          
+const title = document.createElement("h3");
+title.textContent = item.title || "お知らせ";
 
-          const body = document.createElement("p");
+// 投稿日から7日以内ならNEWを表示
+if (item.date) {
+  const postDate = new Date(item.date + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const daysAgo = Math.floor(
+    (today - postDate) / (1000 * 60 * 60 * 24)
+  );
+
+  if (daysAgo >= 0 && daysAgo < 7) {
+    const badge = document.createElement("span");
+    badge.className = "news-new-badge";
+    badge.textContent = "NEW";
+    title.appendChild(badge);
+  }
+}
+
+const body = document.createElement("p");
+
           body.className = "members-news-text";
           body.textContent = item.text || "";
 
