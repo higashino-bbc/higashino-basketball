@@ -150,6 +150,20 @@
       <p class="notice">リンク先は、顧問が設定した資料・動画を開きます。</p>
 
 
+      <!-- 部員へのお知らせ -->
+      <div id="membersNews" class="members-news">
+        <h2>📢 部員へのお知らせ</h2>
+        <p>顧問からの連絡を確認してください。</p>
+
+        <div id="membersNewsList" aria-live="polite">
+          <p>お知らせを読み込んでいます...</p>
+        </div>
+
+        <button type="button" id="showAllNewsButton" hidden>
+          お知らせ一覧
+        </button>
+      </div>
+
 
       <button type="button" id="logoutButton">ログアウト</button>
     </section>
@@ -276,6 +290,131 @@ document.getElementById("backToMenuButton").addEventListener("click", function()
   document.getElementById("rulesContent").classList.add("hidden");
   document.getElementById("membersPanel").classList.remove("hidden");
 });
+
+    // 部員へのお知らせ（Googleスプレッドシート連携）
+    const MEMBERS_NEWS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZ_nakqrddbpZxuToiz8HK3qABNr39m1NmqHjgJXrkxjg4biUtWPqxpXLhwgsdK-MVb8yoZh6xhCLf/pub?gid=0&single=true&output=csv";
+
+    const newsList = document.getElementById("membersNewsList");
+    const showAllNewsButton = document.getElementById("showAllNewsButton");
+
+    let allMembersNews = [];
+    let showAllMembersNews = false;
+
+    function parseNewsCSV(csv) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < csv.length; i++) {
+        const char = csv[i];
+        const next = csv[i + 1];
+
+        if (char === '"' && inQuotes && next === '"') {
+          field += '"';
+          i++;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          row.push(field);
+          field = "";
+        } else if ((char === "\n" || char === "\r") && !inQuotes) {
+          if (char === "\r" && next === "\n") i++;
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else {
+          field += char;
+        }
+      }
+
+      if (field !== "" || row.length > 0) {
+        row.push(field);
+        rows.push(row);
+      }
+
+      if (rows.length < 2) return [];
+
+      const headers = rows.shift().map(value => value.trim());
+
+      return rows
+        .filter(row => row.some(value => value.trim() !== ""))
+        .map(row => {
+          const item = {};
+          headers.forEach((header, index) => {
+            item[header] = (row[index] || "").trim();
+          });
+          return item;
+        });
+    }
+
+    function renderMembersNews() {
+      const visibleNews = showAllMembersNews
+        ? allMembersNews
+        : allMembersNews.slice(0, 5);
+
+      newsList.replaceChildren();
+
+      if (visibleNews.length === 0) {
+        newsList.textContent = "現在、お知らせはありません。";
+      } else {
+        visibleNews.forEach(item => {
+          const article = document.createElement("article");
+          article.className = "members-news-item";
+
+          const meta = document.createElement("p");
+          meta.className = "members-news-meta";
+          meta.textContent = [item.date, item.category]
+            .filter(Boolean)
+            .join(" ｜ ");
+
+          const title = document.createElement("h3");
+          title.textContent = item.title || "お知らせ";
+
+          const body = document.createElement("p");
+          body.className = "members-news-text";
+          body.textContent = item.text || "";
+
+          article.append(meta, title, body);
+          newsList.appendChild(article);
+        });
+      }
+
+      showAllNewsButton.hidden =
+        allMembersNews.length <= 5 || showAllMembersNews;
+
+      showAllNewsButton.textContent = "お知らせ一覧";
+    }
+
+    async function loadMembersNews() {
+      try {
+        const response = await fetch(MEMBERS_NEWS_CSV_URL);
+
+        if (!response.ok) {
+          throw new Error("CSVの取得に失敗しました");
+        }
+
+        const csv = await response.text();
+        allMembersNews = parseNewsCSV(csv)
+          .filter(item => item.show.toUpperCase() === "TRUE")
+          .sort((a, b) => b.date.localeCompare(a.date));
+
+        renderMembersNews();
+      } catch (error) {
+        newsList.textContent =
+          "お知らせを読み込めませんでした。時間をおいて再度確認してください。";
+        showAllNewsButton.hidden = true;
+        console.error("部員向けお知らせの読み込みエラー:", error);
+      }
+    }
+
+    showAllNewsButton.addEventListener("click", function() {
+      showAllMembersNews = true;
+      renderMembersNews();
+    });
+
+    loadMembersNews();
 
   </script>
 </body>
