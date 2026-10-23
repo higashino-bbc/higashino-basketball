@@ -196,24 +196,53 @@
     const membersPanel = document.getElementById("membersPanel");
     const errorMessage = document.getElementById("errorMessage");
 
+  
+    // ログイン状態を10分間維持する
+    const LOGIN_KEY = "higashinoMembersLogin";
+    const LOGIN_DURATION = 10 * 60 * 1000;
+
+    function showMembersPage() {
+      loginPanel.classList.add("hidden");
+      membersPanel.classList.remove("hidden");
+      errorMessage.textContent = "";
+    }
+
+    function checkLoginStatus() {
+      const loginTime = Number(localStorage.getItem(LOGIN_KEY));
+
+      if (loginTime && Date.now() - loginTime < LOGIN_DURATION) {
+        showMembersPage();
+      } else {
+        localStorage.removeItem(LOGIN_KEY);
+        membersPanel.classList.add("hidden");
+        loginPanel.classList.remove("hidden");
+      }
+    }
+
     document.getElementById("loginForm").addEventListener("submit", function(event) {
       event.preventDefault();
 
       if (document.getElementById("password").value === CLUB_PASSWORD) {
-        loginPanel.classList.add("hidden");
-        membersPanel.classList.remove("hidden");
-        errorMessage.textContent = "";
+        localStorage.setItem(LOGIN_KEY, String(Date.now()));
+        showMembersPage();
         document.getElementById("password").value = "";
       } else {
         errorMessage.textContent = "パスワードが違います。もう一度入力してください。";
       }
     });
 
-    document.getElementById("logoutButton").addEventListener("click", function() {
-      membersPanel.classList.add("hidden");
-      loginPanel.classList.remove("hidden");
-      document.getElementById("password").value = "";
-    });
+    // ページを開いたときにログイン状態を確認
+    checkLoginStatus();
+
+   
+document.getElementById("logoutButton").addEventListener("click", function() {
+  localStorage.removeItem(LOGIN_KEY);
+  membersPanel.classList.add("hidden");
+  loginPanel.classList.remove("hidden");
+  document.getElementById("password").value = "";
+  errorMessage.textContent = "";
+});
+
 
     // リンク先は、設定後に有効になります。
  
