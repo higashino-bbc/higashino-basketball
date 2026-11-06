@@ -1,1 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スタッツ分析 | 東野高校バスケットボール部</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 24px 16px;
+  background: #071426;
+  color: #fff;
+  font-family: Arial, "Noto Sans JP", sans-serif;
+}
+.container { max-width: 1100px; margin: auto; }
+h1 { color: #75c8ff; margin-bottom: 8px; }
+.description { color: #b8c9dc; margin-bottom: 24px; }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+input {
+  flex: 1;
+  min-width: 220px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #38516c;
+  background: #10243b;
+  color: white;
+}
+button, .back {
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #168bd0;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}
+.table-wrap { overflow-x: auto; background: #10243b; border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #29415b;
+  text-align: center;
+  white-space: nowrap;
+}
+th { background: #163858; color: #8ed2ff; }
+.status { color: #b8c9dc; margin: 14px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="members.html">← 会員ページに戻る</a>
+  <h1>📊 STATS</h1>
+  <p class="description">東野高校バスケットボール部｜選手別・試合別スタッツ</p>
 
+  <div class="controls">
+    <input id="search" type="text" placeholder="選手名・項目などで検索">
+    <button onclick="loadStats()">再読み込み</button>
+  </div>
+
+  <p id="status" class="status">データを読み込んでいます...</p>
+  <div class="table-wrap">
+    <table id="statsTable"></table>
+  </div>
+</div>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=577494274&single=true&output=csv";
+
+const LOGIN_KEY = "higashinoMembersLogin";
+const loginTime = Number(localStorage.getItem(LOGIN_KEY));
+
+if (!loginTime || Date.now() - loginTime > 10 * 60 * 1000) {
+  localStorage.removeItem(LOGIN_KEY);
+  location.href = "members.html";
+}
+
+let allRows = [];
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '"') {
+      if (quoted && text[i + 1] === '"') {
+        cell += '"';
+        i++;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (char === "," && !quoted) {
+      row.push(cell);
+      cell = "";
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell);
+      if (row.some(value => value.trim() !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    } else {
+      cell += char;
+    }
+  }
+
+  row.push(cell);
+  if (row.some(value => value.trim() !== "")) rows.push(row);
+  return rows;
+}
+
+function renderTable(rows) {
+  const table = document.getElementById("statsTable");
+  table.innerHTML = "";
+
+  if (!rows.length) return;
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+
+  rows[0].forEach(value => {
+    const th = document.createElement("th");
+    th.textContent = value;
+    headerRow.appendChild(th);
+  });
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  rows.slice(1).forEach(row => {
+    const tr = document.createElement("tr");
+    rows[0].forEach((_, index) => {
+      const td = document.createElement("td");
+      td.textContent = row[index] || "";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+}
+
+function filterRows() {
+  const keyword = document.getElementById("search").value.toLowerCase();
+  if (!keyword) {
+    renderTable(allRows);
+    return;
+  }
+
+  const filtered = [
+    allRows[0],
+    ...allRows.slice(1).filter(row =>
+      row.some(value => value.toLowerCase().includes(keyword))
+    )
+  ];
+  renderTable(filtered);
+}
+
+async function loadStats() {
+  const status = document.getElementById("status");
+  status.textContent = "データを読み込んでいます...";
+
+  try {
+    const response = await fetch(CSV_URL + "&t=" + Date.now());
+    if (!response.ok) throw new Error("CSVの取得に失敗しました");
+
+    const csvText = await response.text();
+    allRows = parseCSV(csvText);
+
+    if (!allRows.length) throw new Error("表示できるデータがありません");
+
+    filterRows();
+    status.textContent = `${allRows.length - 1}件のデータを表示しています。`;
+  } catch (error) {
+    status.textContent = "データを読み込めませんでした。公開設定やCSVのURLを確認してください。";
+    console.error(error);
+  }
+}
+
+document.getElementById("search").addEventListener("input", filterRows);
+loadStats();
+</script>
+</body>
+</html>
