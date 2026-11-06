@@ -205,6 +205,10 @@
           🏀 試合動画
           <span>試合映像・振り返り</span>
         </a>
+        <a class="link-button" href="stats.html" data-link="stats">
+  📊 スタッツ
+  <span>選手別・試合別のスタッツ分析</span>
+</a>
       </div>
 
       <p class="notice">リンク先は、顧問が設定した資料・動画を開きます。</p>
@@ -329,7 +333,8 @@ document.querySelectorAll("[data-link]").forEach(function(link) {
     } else if (
   link.dataset.link !== "schedule" &&
   link.dataset.link !== "practice" &&
-  link.dataset.link !== "games"
+  link.dataset.link !== "games" &&
+link.dataset.link !== "stats"
 ) {
       event.preventDefault();
       alert("このリンクはまだ設定されていません。顧問に確認してください。");
