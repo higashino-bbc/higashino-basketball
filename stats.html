@@ -2,72 +2,110 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>スタッツ分析 | 東野高校バスケットボール部</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STATS | 東野高校バスケットボール部</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 24px 16px;
-  background: #071426;
-  color: #fff;
-  font-family: Arial, "Noto Sans JP", sans-serif;
-}
-.container { max-width: 1100px; margin: auto; }
-h1 { color: #75c8ff; margin-bottom: 8px; }
-.description { color: #b8c9dc; margin-bottom: 24px; }
-.controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
-input {
-  flex: 1;
-  min-width: 220px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #38516c;
-  background: #10243b;
-  color: white;
-}
-button, .back {
-  padding: 11px 18px;
-  border: 0;
-  border-radius: 8px;
-  background: #168bd0;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  text-decoration: none;
-}
-.table-wrap { overflow-x: auto; background: #10243b; border-radius: 10px; }
-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #29415b;
-  text-align: center;
-  white-space: nowrap;
-}
-th { background: #163858; color: #8ed2ff; }
-.status { color: #b8c9dc; margin: 14px 0; }
+:root{--bg:#071426;--panel:#10243b;--panel2:#163858;--line:#29415b;--blue:#75c8ff;--muted:#b8c9dc;--white:#f4f8fc}
+*{box-sizing:border-box}
+body{margin:0;padding:22px 14px 48px;background:var(--bg);color:var(--white);font-family:Arial,"Noto Sans JP",sans-serif}
+.container{max-width:1180px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+h1{margin:8px 0;color:var(--blue);font-size:clamp(28px,5vw,42px);letter-spacing:1px}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
+.back,.tab,button,select,input{font:inherit}
+.back,button,.tab{border:1px solid #376184;border-radius:8px;padding:10px 14px;background:#168bd0;color:white;text-decoration:none;cursor:pointer;font-weight:700}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.tab{background:#10243b;color:#b8c9dc}
+.tab.active{background:#168bd0;color:white;border-color:#168bd0}
+.panel{display:none}.panel.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:16px 0 22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card .label{font-size:12px;color:var(--muted)}
+.card .value{font-size:28px;font-weight:800;margin-top:8px;color:white}
+.section-title{color:var(--blue);font-size:19px;margin:24px 0 12px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+input,select{background:var(--panel);color:white;border:1px solid #38516c;border-radius:8px;padding:11px;min-width:180px}
+.table-wrap{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:650px}
+th,td{padding:11px 12px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:var(--panel2);color:var(--blue);position:sticky;top:0}
+tbody tr:hover{background:#18334f}
+.muted{color:var(--muted);font-size:13px}
+.status{color:var(--muted);margin:12px 0;font-size:13px}
+.player-head{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
+.player-head h3{margin:0 0 5px;color:var(--blue)}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+@media(max-width:600px){body{padding:16px 10px 32px}.card .value{font-size:24px}.back{padding:9px 11px}}
 </style>
 </head>
 <body>
 <div class="container">
-  <a class="back" href="members.html">← 会員ページに戻る</a>
-  <h1>📊 STATS</h1>
-  <p class="description">東野高校バスケットボール部｜選手別・試合別スタッツ</p>
+<header>
+  <div><h1>STATS DASHBOARD</h1><p class="subtitle">HIGASHINO HIGH SCHOOL BASKETBALL</p></div>
+  <a class="back" href="members.html">← 会員ページ</a>
+</header>
 
+<nav class="tabs">
+  <button class="tab active" data-tab="team">チーム成績</button>
+  <button class="tab" data-tab="ranking">選手ランキング</button>
+  <button class="tab" data-tab="player">個人成績</button>
+  <button class="tab" data-tab="games">試合一覧</button>
+</nav>
+
+<section id="team" class="panel active">
+  <h2 class="section-title">TEAM OVERVIEW</h2>
+  <div class="cards" id="teamCards"></div>
+  <h3 class="section-title">直近の試合</h3>
+  <div class="table-wrap"><table id="recentGames"></table></div>
+</section>
+
+<section id="ranking" class="panel">
+  <h2 class="section-title">PLAYER RANKING</h2>
   <div class="controls">
-    <input id="search" type="text" placeholder="選手名・項目などで検索">
-    <button onclick="loadStats()">再読み込み</button>
+    <select id="rankMetric">
+      <option value="PTS平均">平均得点</option>
+      <option value="PTS合計">総得点</option>
+      <option value="REB">リバウンド</option>
+      <option value="AST">アシスト</option>
+      <option value="STL">スティール</option>
+      <option value="BLK">ブロック</option>
+      <option value="EFF平均">平均EFF</option>
+      <option value="3P%">3P%</option>
+      <option value="FG%">FG%</option>
+      <option value="FT%">FT%</option>
+    </select>
   </div>
+  <div class="table-wrap"><table id="rankingTable"></table></div>
+</section>
 
-  <p id="status" class="status">データを読み込んでいます...</p>
-  <div class="table-wrap">
-    <table id="statsTable"></table>
+<section id="player" class="panel">
+  <h2 class="section-title">PLAYER DETAIL</h2>
+  <div class="controls">
+    <select id="playerSelect">
+      <option value="">選手を選択してください</option>
+    </select>
   </div>
+  <div id="playerSummary"></div>
+  <h3 class="section-title">試合ごとの成績</h3>
+  <div class="table-wrap"><table id="playerGames"></table></div>
+</section>
+
+<section id="games" class="panel">
+  <h2 class="section-title">GAME LOG</h2>
+  <div class="table-wrap"><table id="gamesTable"></table></div>
+</section>
+
+<p id="status" class="status">データを読み込んでいます...</p>
 </div>
 
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=577494274&single=true&output=csv";
+const CSV = {
+  season: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=730056898&single=true&output=csv",
+  individual: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=577494274&single=true&output=csv",
+  games: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=579539540&single=true&output=csv"
+};
 
+// ログイン状態の確認
 const LOGIN_KEY = "higashinoMembersLogin";
 const loginTime = Number(localStorage.getItem(LOGIN_KEY));
 
@@ -76,113 +114,352 @@ if (!loginTime || Date.now() - loginTime > 10 * 60 * 1000) {
   location.href = "members.html";
 }
 
-let allRows = [];
+let seasonRows = [];
+let individualRows = [];
+let gameRows = [];
 
+const $ = id => document.getElementById(id);
+
+const num = v => {
+  const n = Number(String(v ?? "").replace(/,/g, "").replace("%", ""));
+  return Number.isFinite(n) ? n : 0;
+};
+
+const pct = v => {
+  if (v === "" || v == null) return "—";
+  const n = num(v);
+  return String(v).includes("%")
+    ? n + "%"
+    : (n <= 1 ? n * 100 : n).toFixed(1) + "%";
+};
+
+// CSVを読み込む処理
 function parseCSV(text) {
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let quoted = false;
+  const out = [];
+  let row = [], cell = "", q = false;
 
   for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (char === '"') {
-      if (quoted && text[i + 1] === '"') {
+    const c = text[i];
+
+    if (c === '"') {
+      if (q && text[i + 1] === '"') {
         cell += '"';
         i++;
       } else {
-        quoted = !quoted;
+        q = !q;
       }
-    } else if (char === "," && !quoted) {
+    } else if (c === ',' && !q) {
       row.push(cell);
       cell = "";
-    } else if ((char === "\n" || char === "\r") && !quoted) {
-      if (char === "\r" && text[i + 1] === "\n") i++;
+    } else if ((c === '\n' || c === '\r') && !q) {
+      if (c === '\r' && text[i + 1] === '\n') i++;
       row.push(cell);
-      if (row.some(value => value.trim() !== "")) rows.push(row);
+      if (row.some(x => x.trim())) out.push(row);
       row = [];
       cell = "";
     } else {
-      cell += char;
+      cell += c;
     }
   }
 
   row.push(cell);
-  if (row.some(value => value.trim() !== "")) rows.push(row);
-  return rows;
+  if (row.some(x => x.trim())) out.push(row);
+
+  return out;
 }
 
-function renderTable(rows) {
-  const table = document.getElementById("statsTable");
-  table.innerHTML = "";
+function objects(rows) {
+  if (!rows.length) return [];
 
-  if (!rows.length) return;
+  const headers = rows[0].map(x =>
+    x.trim().replace(/^\uFEFF/, "")
+  );
 
-  const thead = document.createElement("thead");
-  const headerRow = document.createElement("tr");
-
-  rows[0].forEach(value => {
-    const th = document.createElement("th");
-    th.textContent = value;
-    headerRow.appendChild(th);
-  });
-
-  thead.appendChild(headerRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  rows.slice(1).forEach(row => {
-    const tr = document.createElement("tr");
-    rows[0].forEach((_, index) => {
-      const td = document.createElement("td");
-      td.textContent = row[index] || "";
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-
-  table.appendChild(tbody);
+  return rows.slice(1)
+    .map(r => Object.fromEntries(
+      headers.map((h, i) => [h, (r[i] ?? "").trim()])
+    ))
+    .filter(o => Object.values(o).some(v => v !== ""));
 }
 
-function filterRows() {
-  const keyword = document.getElementById("search").value.toLowerCase();
-  if (!keyword) {
-    renderTable(allRows);
+async function fetchSheet(url) {
+  const res = await fetch(url + "&cache=" + Date.now());
+
+  if (!res.ok) {
+    throw new Error("CSVを取得できませんでした");
+  }
+
+  const text = await res.text();
+
+  if (text.trim().startsWith("<")) {
+    throw new Error("CSVではなくHTMLが返されました。公開設定を確認してください。");
+  }
+
+  return objects(parseCSV(text));
+}
+
+function cell(v) {
+  return v == null || v === "" ? "—" : v;
+}
+
+// 表を作成する処理
+function table(el, headers, rows) {
+  const target = $(el);
+  target.innerHTML = "";
+
+  if (!rows.length) {
+    target.innerHTML =
+      '<tbody><tr><td class="empty">表示できるデータがありません</td></tr></tbody>';
     return;
   }
 
-  const filtered = [
-    allRows[0],
-    ...allRows.slice(1).filter(row =>
-      row.some(value => value.toLowerCase().includes(keyword))
-    )
+  const thead = document.createElement("thead");
+  const tr = document.createElement("tr");
+
+  headers.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    tr.appendChild(th);
+  });
+
+  thead.appendChild(tr);
+  target.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+
+    row.forEach(v => {
+      const td = document.createElement("td");
+      td.textContent = cell(v);
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  target.appendChild(tbody);
+}
+
+// チーム成績
+function renderTeam() {
+  const played = gameRows.filter(g =>
+    g["対戦相手"] &&
+    (g["東野得点"] !== "" || g["相手得点"] !== "")
+  );
+
+  let wins = 0, losses = 0, ties = 0;
+  let forPts = 0, against = 0;
+
+  played.forEach(g => {
+    const a = num(g["東野得点"]);
+    const b = num(g["相手得点"]);
+
+    forPts += a;
+    against += b;
+
+    if (a > b) wins++;
+    else if (a < b) losses++;
+    else ties++;
+  });
+
+  const avg = v =>
+    played.length ? (v / played.length).toFixed(1) : "—";
+
+  const cards = [
+    ["試合数", played.length],
+    ["勝利", wins],
+    ["敗戦", losses],
+    ["勝率", played.length ? ((wins / played.length) * 100).toFixed(1) + "%" : "—"],
+    ["平均得点", avg(forPts)],
+    ["平均失点", avg(against)]
   ];
-  renderTable(filtered);
+
+  $("teamCards").innerHTML = cards.map(c =>
+    `<div class="card">
+      <div class="label">${c[0]}</div>
+      <div class="value">${c[1]}</div>
+    </div>`
+  ).join("");
+
+  const recent = played.slice().reverse().slice(0, 8);
+
+  table(
+    "recentGames",
+    ["日付", "大会", "対戦相手", "東野", "相手", "結果"],
+    recent.map(g => {
+      const a = num(g["東野得点"]);
+      const b = num(g["相手得点"]);
+
+      return [
+        g["試合日"],
+        g["大会名"],
+        g["対戦相手"],
+        g["東野得点"],
+        g["相手得点"],
+        a > b ? "WIN" : a < b ? "LOSE" : "TIE"
+      ];
+    })
+  );
 }
 
-async function loadStats() {
-  const status = document.getElementById("status");
-  status.textContent = "データを読み込んでいます...";
+// 選手ランキング
+function renderRanking() {
+  const metric = $("rankMetric").value;
 
-  try {
-    const response = await fetch(CSV_URL + "&t=" + Date.now());
-    if (!response.ok) throw new Error("CSVの取得に失敗しました");
+  const sorted = seasonRows
+    .filter(r => r["選手名"])
+    .slice()
+    .sort((a, b) => num(b[metric]) - num(a[metric]));
 
-    const csvText = await response.text();
-    allRows = parseCSV(csvText);
+  table(
+    "rankingTable",
+    ["順位", "選手", "背番号", "出場", "PTS平均", "REB", "AST", "STL", "BLK", "EFF平均", "選択項目"],
+    sorted.map((r, i) => [
+      i + 1,
+      r["選手名"],
+      r["背番号"],
+      r["GP"],
+      r["PTS平均"],
+      r["REB"],
+      r["AST"],
+      r["STL"],
+      r["BLK"],
+      r["EFF平均"],
+      metric === "FG%" || metric === "3P%" || metric === "FT%"
+        ? pct(r[metric])
+        : r[metric]
+    ])
+  );
+}
 
-    if (!allRows.length) throw new Error("表示できるデータがありません");
+// 個人成績
+function renderPlayer() {
+  const name = $("playerSelect").value;
+  const summary = $("playerSummary");
 
-    filterRows();
-    status.textContent = `${allRows.length - 1}件のデータを表示しています。`;
-  } catch (error) {
-    status.textContent = "データを読み込めませんでした。公開設定やCSVのURLを確認してください。";
-    console.error(error);
+  summary.innerHTML = "";
+
+  if (!name) {
+    table("playerGames", [], []);
+    return;
   }
+
+  const s = seasonRows.find(r => r["選手名"] === name);
+
+  if (s) {
+    const metrics = [
+      ["出場試合", s["GP"]],
+      ["総得点", s["PTS合計"]],
+      ["平均得点", s["PTS平均"]],
+      ["REB", s["REB"]],
+      ["AST", s["AST"]],
+      ["EFF平均", s["EFF平均"]]
+    ];
+
+    summary.innerHTML =
+      '<div class="cards">' +
+      metrics.map(m =>
+        `<div class="card">
+          <div class="label">${m[0]}</div>
+          <div class="value">${cell(m[1])}</div>
+        </div>`
+      ).join("") +
+      '</div>';
+  }
+
+  const rows = individualRows.filter(r => r["選手名"] === name);
+
+  table(
+    "playerGames",
+    ["日付", "対戦相手", "PTS", "REB", "AST", "STL", "BLK", "TO", "FG%", "3P%", "FT%", "EFF"],
+    rows.map(r => [
+      r["試合日"],
+      r["対戦相手"],
+      r["PTS"],
+      r["REB"],
+      r["AST"],
+      r["STL"],
+      r["BLK"],
+      r["TO"],
+      pct(r["FG%"]),
+      pct(r["3P%"]),
+      pct(r["FT%"]),
+      r["EFF"]
+    ])
+  );
 }
 
-document.getElementById("search").addEventListener("input", filterRows);
-loadStats();
+// 試合一覧
+function renderGames() {
+  const rows = gameRows.filter(g => g["対戦相手"]);
+
+  table(
+    "gamesTable",
+    ["日付", "大会", "対戦相手", "東野得点", "相手得点", "会場", "備考"],
+    rows.map(g => [
+      g["試合日"],
+      g["大会名"],
+      g["対戦相手"],
+      g["東野得点"],
+      g["相手得点"],
+      g["会場"],
+      g["備考"]
+    ])
+  );
+}
+
+// メニュー切り替え
+document.querySelectorAll(".tab").forEach(btn =>
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+
+    document.querySelectorAll(".panel").forEach(p =>
+      p.classList.toggle("active", p.id === btn.dataset.tab)
+    );
+  })
+);
+
+$("rankMetric").addEventListener("change", renderRanking);
+$("playerSelect").addEventListener("change", renderPlayer);
+
+// データ読み込み
+(async function init() {
+  try {
+    [seasonRows, individualRows, gameRows] = await Promise.all([
+      fetchSheet(CSV.season),
+      fetchSheet(CSV.individual),
+      fetchSheet(CSV.games)
+    ]);
+
+    const names = [
+      ...new Set(seasonRows.map(r => r["選手名"]).filter(Boolean))
+    ];
+
+    $("playerSelect").innerHTML =
+      '<option value="">選手を選択してください</option>' +
+      names.map(n =>
+        `<option value="${n.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${n}</option>`
+      ).join("");
+
+    renderTeam();
+    renderRanking();
+    renderGames();
+
+    $("status").textContent =
+      `データ更新完了｜累計 ${seasonRows.length}名・個人成績 ${individualRows.length}件・試合 ${gameRows.filter(g => g["対戦相手"]).length}件`;
+
+  } catch (e) {
+    $("status").textContent =
+      "データを読み込めませんでした：" + e.message +
+      "（各シートのCSV公開設定を確認してください）";
+
+    console.error(e);
+  }
+})();
 </script>
 </body>
 </html>
