@@ -274,7 +274,54 @@ tbody tr:hover {
   font-size: 25px;
   margin-top: 7px;
 }
+/* 試合一覧のクリック */
+#gamesTable tbody tr {
+  cursor: pointer;
+  transition: 0.2s;
+}
 
+#gamesTable tbody tr:hover {
+  background: #245078;
+}
+
+#gamesTable tbody tr.selected {
+  background: #245078;
+  outline: 1px solid var(--blue);
+}
+
+/* 試合詳細 */
+#gameDetail {
+  border-top: 2px solid var(--blue);
+  padding-top: 25px;
+}
+
+#gameDetailTitle {
+  color: var(--blue);
+}
+
+.game-detail-card {
+  background: linear-gradient(145deg, #163858, #10243b);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 17px;
+}
+
+.game-detail-card small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.game-detail-card strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 7px;
+}
+
+.game-detail-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 10px 0;
+}
 @media(max-width: 650px) {
   body { padding: 18px 12px 35px; }
 
@@ -401,6 +448,21 @@ tbody tr:hover {
   <div class="table-wrap">
     <table id="playerTable"></table>
   </div>
+  <!-- 選択した試合の詳細 -->
+<div id="gameDetail" style="display:none; margin-top:30px;">
+
+  <div class="section-header">
+    <h2 id="gameDetailTitle">GAME DETAIL</h2>
+  </div>
+
+  <div id="gameDetailSummary" class="player-cards"></div>
+
+  <h3>TEAM BOX SCORE</h3>
+  <div class="table-wrap">
+    <table id="gameDetailTable"></table>
+  </div>
+
+</div>
 </section>
 
 <!-- 試合別スタッツ -->
@@ -719,6 +781,7 @@ function renderPlayer() {
 }
 
 // 試合別スタッツ
+// 試合別スタッツ
 function renderGames() {
   const rows = gameRows.filter(g => g["対戦相手"]);
 
@@ -731,7 +794,6 @@ function renderGames() {
     ])
   );
 }
-
 // ランキング
 function renderRanking() {
   const metric = $("rankMetric").value;
