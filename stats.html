@@ -3,64 +3,425 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>STATS | 東野高校バスケットボール部</title>
+<title>STATS DASHBOARD | HIGASHINO BASKETBALL</title>
+
 <style>
-:root{--bg:#071426;--panel:#10243b;--panel2:#163858;--line:#29415b;--blue:#75c8ff;--muted:#b8c9dc;--white:#f4f8fc}
-*{box-sizing:border-box}
-body{margin:0;padding:22px 14px 48px;background:var(--bg);color:var(--white);font-family:Arial,"Noto Sans JP",sans-serif}
-.container{max-width:1180px;margin:auto}
-header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
-h1{margin:8px 0;color:var(--blue);font-size:clamp(28px,5vw,42px);letter-spacing:1px}
-.subtitle{margin:0;color:var(--muted);font-size:13px}
-.back,.tab,button,select,input{font:inherit}
-.back,button,.tab{border:1px solid #376184;border-radius:8px;padding:10px 14px;background:#168bd0;color:white;text-decoration:none;cursor:pointer;font-weight:700}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
-.tab{background:#10243b;color:#b8c9dc}
-.tab.active{background:#168bd0;color:white;border-color:#168bd0}
-.panel{display:none}.panel.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:16px 0 22px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
-.card .label{font-size:12px;color:var(--muted)}
-.card .value{font-size:28px;font-weight:800;margin-top:8px;color:white}
-.section-title{color:var(--blue);font-size:19px;margin:24px 0 12px}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-input,select{background:var(--panel);color:white;border:1px solid #38516c;border-radius:8px;padding:11px;min-width:180px}
-.table-wrap{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;min-width:650px}
-th,td{padding:11px 12px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
-th{background:var(--panel2);color:var(--blue);position:sticky;top:0}
-tbody tr:hover{background:#18334f}
-.muted{color:var(--muted);font-size:13px}
-.status{color:var(--muted);margin:12px 0;font-size:13px}
-.player-head{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:14px 0}
-.player-head h3{margin:0 0 5px;color:var(--blue)}
-.empty{padding:22px;text-align:center;color:var(--muted)}
-@media(max-width:600px){body{padding:16px 10px 32px}.card .value{font-size:24px}.back{padding:9px 11px}}
+:root {
+  --bg: #071426;
+  --panel: #10243b;
+  --panel2: #163858;
+  --line: #29415b;
+  --blue: #75c8ff;
+  --white: #f4f8fc;
+  --muted: #a9bdd2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 25px 16px 50px;
+  background: var(--bg);
+  color: var(--white);
+  font-family: Arial, "Noto Sans JP", sans-serif;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ヘッダー */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 35px;
+}
+
+.logo {
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+h1 {
+  font-size: clamp(30px, 5vw, 46px);
+  margin: 8px 0;
+  letter-spacing: 1px;
+}
+
+.team-name {
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+.back-link {
+  color: white;
+  background: var(--panel2);
+  border: 1px solid #376184;
+  border-radius: 8px;
+  padding: 11px 16px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* トップ画面 */
+.page-title {
+  color: var(--blue);
+  font-size: 18px;
+  margin: 30px 0 15px;
+  letter-spacing: 1px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.summary-card {
+  background: linear-gradient(145deg, #163858, #10243b);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 22px;
+  min-height: 125px;
+}
+
+.summary-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.summary-value {
+  font-size: 34px;
+  font-weight: bold;
+  margin-top: 12px;
+  color: white;
+}
+
+.summary-unit {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: 5px;
+}
+
+/* メニューカード */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 15px;
+}
+
+.menu-card {
+  display: block;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  padding: 23px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  min-height: 125px;
+}
+
+.menu-card:hover {
+  background: var(--panel2);
+  border-color: var(--blue);
+  transform: translateY(-3px);
+}
+
+.menu-number {
+  color: var(--blue);
+  font-size: 12px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.menu-name {
+  font-size: 19px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.menu-description {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.arrow {
+  float: right;
+  color: var(--blue);
+  font-size: 22px;
+}
+
+/* 詳細画面 */
+.detail-page {
+  display: none;
+}
+
+.detail-page.active {
+  display: block;
+}
+
+.home-page.hidden {
+  display: none;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  color: var(--blue);
+  font-size: 23px;
+  margin: 0;
+}
+
+.home-button {
+  background: var(--panel2);
+  color: white;
+  border: 1px solid #376184;
+  border-radius: 8px;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+select {
+  background: var(--panel);
+  color: white;
+  border: 1px solid #38516c;
+  border-radius: 8px;
+  padding: 11px;
+  min-width: 180px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin: 15px 0 25px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 650px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+th {
+  background: var(--panel2);
+  color: var(--blue);
+}
+
+tbody tr:hover {
+  background: #18334f;
+}
+
+.status {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 30px;
+}
+
+.player-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.player-stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.player-stat small {
+  color: var(--muted);
+}
+
+.player-stat strong {
+  display: block;
+  font-size: 25px;
+  margin-top: 7px;
+}
+
+@media(max-width: 650px) {
+  body { padding: 18px 12px 35px; }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    min-height: 100px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-card {
+    min-height: 110px;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="container">
+
 <header>
-  <div><h1>STATS DASHBOARD</h1><p class="subtitle">HIGASHINO HIGH SCHOOL BASKETBALL</p></div>
-  <a class="back" href="members.html">← 会員ページ</a>
+  <div>
+    <div class="logo">HIGASHINO BASKETBALL</div>
+    <h1>STATS DASHBOARD</h1>
+    <div class="team-name">HIGASHINO HIGH SCHOOL</div>
+  </div>
+
+  <a href="members.html" class="back-link">← 会員ページ</a>
 </header>
 
-<nav class="tabs">
-  <button class="tab active" data-tab="team">チーム成績</button>
-  <button class="tab" data-tab="ranking">選手ランキング</button>
-  <button class="tab" data-tab="player">個人成績</button>
-  <button class="tab" data-tab="games">試合一覧</button>
-</nav>
+<!-- トップ画面 -->
+<div id="homePage" class="home-page">
 
-<section id="team" class="panel active">
-  <h2 class="section-title">TEAM OVERVIEW</h2>
-  <div class="cards" id="teamCards"></div>
-  <h3 class="section-title">直近の試合</h3>
-  <div class="table-wrap"><table id="recentGames"></table></div>
+  <div class="page-title">TEAM OVERVIEW</div>
+
+  <div class="summary-grid">
+
+    <div class="summary-card">
+      <div class="summary-label">試合数 / GAMES</div>
+      <div class="summary-value" id="totalGames">--</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">平均得点 / AVG POINTS</div>
+      <div class="summary-value" id="avgPoints">--</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">勝率 / WIN RATE</div>
+      <div class="summary-value" id="winRate">--</div>
+    </div>
+
+  </div>
+
+  <div class="page-title">MENU</div>
+
+  <div class="menu-grid">
+
+    <button class="menu-card" onclick="openPage('playersPage')">
+      <div class="menu-number">01 / PLAYER</div>
+      <div class="menu-name">
+        選手別スタッツ <span class="arrow">›</span>
+      </div>
+      <div class="menu-description">
+        得点・リバウンド・アシストなど
+      </div>
+    </button>
+
+    <button class="menu-card" onclick="openPage('gamesPage')">
+      <div class="menu-number">02 / GAME</div>
+      <div class="menu-name">
+        試合別スタッツ <span class="arrow">›</span>
+      </div>
+      <div class="menu-description">
+        試合ごとのチーム成績
+      </div>
+    </button>
+
+    <button class="menu-card" onclick="openPage('rankingPage')">
+      <div class="menu-number">03 / RANKING</div>
+      <div class="menu-name">
+        ランキング <span class="arrow">›</span>
+      </div>
+      <div class="menu-description">
+        得点・リバウンド等の順位
+      </div>
+    </button>
+
+    <button class="menu-card" onclick="openPage('analysisPage')">
+      <div class="menu-number">04 / ANALYSIS</div>
+      <div class="menu-name">
+        推移・分析 <span class="arrow">›</span>
+      </div>
+      <div class="menu-description">
+        選手やチームの成長を確認
+      </div>
+    </button>
+
+  </div>
+</div>
+
+<!-- 選手別スタッツ -->
+<section id="playersPage" class="detail-page">
+  <div class="section-header">
+    <h2>PLAYER STATS</h2>
+    <button class="home-button" onclick="goHome()">← TOP</button>
+  </div>
+
+  <div class="controls">
+    <select id="playerSelect">
+      <option value="">選手を選択してください</option>
+    </select>
+  </div>
+
+  <div id="playerSummary" class="player-cards"></div>
+
+  <h3>試合ごとの成績</h3>
+  <div class="table-wrap">
+    <table id="playerTable"></table>
+  </div>
 </section>
 
-<section id="ranking" class="panel">
-  <h2 class="section-title">PLAYER RANKING</h2>
+<!-- 試合別スタッツ -->
+<section id="gamesPage" class="detail-page">
+  <div class="section-header">
+    <h2>GAME STATS</h2>
+    <button class="home-button" onclick="goHome()">← TOP</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="gamesTable"></table>
+  </div>
+</section>
+
+<!-- ランキング -->
+<section id="rankingPage" class="detail-page">
+  <div class="section-header">
+    <h2>PLAYER RANKING</h2>
+    <button class="home-button" onclick="goHome()">← TOP</button>
+  </div>
+
   <div class="controls">
     <select id="rankMetric">
       <option value="PTS平均">平均得点</option>
@@ -70,47 +431,61 @@ tbody tr:hover{background:#18334f}
       <option value="STL">スティール</option>
       <option value="BLK">ブロック</option>
       <option value="EFF平均">平均EFF</option>
-      <option value="3P%">3P%</option>
       <option value="FG%">FG%</option>
+      <option value="3P%">3P%</option>
       <option value="FT%">FT%</option>
     </select>
   </div>
-  <div class="table-wrap"><table id="rankingTable"></table></div>
+
+  <div class="table-wrap">
+    <table id="rankingTable"></table>
+  </div>
 </section>
 
-<section id="player" class="panel">
-  <h2 class="section-title">PLAYER DETAIL</h2>
+<!-- 推移・分析 -->
+<section id="analysisPage" class="detail-page">
+  <div class="section-header">
+    <h2>PERFORMANCE ANALYSIS</h2>
+    <button class="home-button" onclick="goHome()">← TOP</button>
+  </div>
+
+  <h3>チーム得点の推移</h3>
+  <div class="table-wrap">
+    <table id="trendTable"></table>
+  </div>
+
+  <h3>選手別パフォーマンス推移</h3>
   <div class="controls">
-    <select id="playerSelect">
+    <select id="trendPlayer">
       <option value="">選手を選択してください</option>
     </select>
   </div>
-  <div id="playerSummary"></div>
-  <h3 class="section-title">試合ごとの成績</h3>
-  <div class="table-wrap"><table id="playerGames"></table></div>
-</section>
 
-<section id="games" class="panel">
-  <h2 class="section-title">GAME LOG</h2>
-  <div class="table-wrap"><table id="gamesTable"></table></div>
+  <div class="table-wrap">
+    <table id="trendPlayerTable"></table>
+  </div>
 </section>
 
 <p id="status" class="status">データを読み込んでいます...</p>
+
 </div>
 
 <script>
+
+// Googleスプレッドシート CSV URL
 const CSV = {
   season: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=730056898&single=true&output=csv",
+
   individual: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=577494274&single=true&output=csv",
+
   games: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRf7cKFzw5iX_Ux4YfmwMlIQ9cxFdFqsbr-emJF_cuqMJPkI7nwg3qh2_0pCLv8OA/pub?gid=579539540&single=true&output=csv"
 };
 
-// ログイン状態の確認
-const LOGIN_KEY = "higashinoMembersLogin";
-const loginTime = Number(localStorage.getItem(LOGIN_KEY));
+// ログイン確認
+const loginTime = Number(localStorage.getItem("higashinoMembersLogin"));
 
 if (!loginTime || Date.now() - loginTime > 10 * 60 * 1000) {
-  localStorage.removeItem(LOGIN_KEY);
+  localStorage.removeItem("higashinoMembersLogin");
   location.href = "members.html";
 }
 
@@ -133,7 +508,28 @@ const pct = v => {
     : (n <= 1 ? n * 100 : n).toFixed(1) + "%";
 };
 
-// CSVを読み込む処理
+// 画面切り替え
+function openPage(id) {
+  $("homePage").classList.add("hidden");
+
+  document.querySelectorAll(".detail-page").forEach(p => {
+    p.classList.remove("active");
+  });
+
+  $(id).classList.add("active");
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  document.querySelectorAll(".detail-page").forEach(p => {
+    p.classList.remove("active");
+  });
+
+  $("homePage").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+
+// CSV解析
 function parseCSV(text) {
   const out = [];
   let row = [], cell = "", q = false;
@@ -185,31 +581,25 @@ function objects(rows) {
 async function fetchSheet(url) {
   const res = await fetch(url + "&cache=" + Date.now());
 
-  if (!res.ok) {
-    throw new Error("CSVを取得できませんでした");
-  }
+  if (!res.ok) throw new Error("CSV取得エラー");
 
   const text = await res.text();
 
   if (text.trim().startsWith("<")) {
-    throw new Error("CSVではなくHTMLが返されました。公開設定を確認してください。");
+    throw new Error("CSV公開設定を確認してください");
   }
 
   return objects(parseCSV(text));
 }
 
-function cell(v) {
-  return v == null || v === "" ? "—" : v;
-}
-
-// 表を作成する処理
-function table(el, headers, rows) {
-  const target = $(el);
+// 表作成
+function makeTable(id, headers, rows) {
+  const target = $(id);
   target.innerHTML = "";
 
   if (!rows.length) {
     target.innerHTML =
-      '<tbody><tr><td class="empty">表示できるデータがありません</td></tr></tbody>';
+      '<tbody><tr><td>データがありません</td></tr></tbody>';
     return;
   }
 
@@ -232,7 +622,7 @@ function table(el, headers, rows) {
 
     row.forEach(v => {
       const td = document.createElement("td");
-      td.textContent = cell(v);
+      td.textContent = v === "" || v == null ? "—" : v;
       tr.appendChild(td);
     });
 
@@ -249,100 +639,49 @@ function renderTeam() {
     (g["東野得点"] !== "" || g["相手得点"] !== "")
   );
 
-  let wins = 0, losses = 0, ties = 0;
-  let forPts = 0, against = 0;
+  let wins = 0;
+  let totalPoints = 0;
 
   played.forEach(g => {
     const a = num(g["東野得点"]);
     const b = num(g["相手得点"]);
 
-    forPts += a;
-    against += b;
-
+    totalPoints += a;
     if (a > b) wins++;
-    else if (a < b) losses++;
-    else ties++;
   });
 
-  const avg = v =>
-    played.length ? (v / played.length).toFixed(1) : "—";
+  $("totalGames").textContent = played.length;
 
-  const cards = [
-    ["試合数", played.length],
-    ["勝利", wins],
-    ["敗戦", losses],
-    ["勝率", played.length ? ((wins / played.length) * 100).toFixed(1) + "%" : "—"],
-    ["平均得点", avg(forPts)],
-    ["平均失点", avg(against)]
+  $("avgPoints").textContent =
+    played.length ? (totalPoints / played.length).toFixed(1) : "--";
+
+  $("winRate").textContent =
+    played.length ? (wins / played.length * 100).toFixed(1) + "%" : "--";
+}
+
+// 選手選択欄
+function setupPlayers() {
+  const names = [
+    ...new Set(seasonRows.map(r => r["選手名"]).filter(Boolean))
   ];
 
-  $("teamCards").innerHTML = cards.map(c =>
-    `<div class="card">
-      <div class="label">${c[0]}</div>
-      <div class="value">${c[1]}</div>
-    </div>`
-  ).join("");
-
-  const recent = played.slice().reverse().slice(0, 8);
-
-  table(
-    "recentGames",
-    ["日付", "大会", "対戦相手", "東野", "相手", "結果"],
-    recent.map(g => {
-      const a = num(g["東野得点"]);
-      const b = num(g["相手得点"]);
-
-      return [
-        g["試合日"],
-        g["大会名"],
-        g["対戦相手"],
-        g["東野得点"],
-        g["相手得点"],
-        a > b ? "WIN" : a < b ? "LOSE" : "TIE"
-      ];
-    })
-  );
+  ["playerSelect", "trendPlayer"].forEach(id => {
+    $(id).innerHTML =
+      '<option value="">選手を選択してください</option>' +
+      names.map(n =>
+        `<option value="${n.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${n}</option>`
+      ).join("");
+  });
 }
 
-// 選手ランキング
-function renderRanking() {
-  const metric = $("rankMetric").value;
-
-  const sorted = seasonRows
-    .filter(r => r["選手名"])
-    .slice()
-    .sort((a, b) => num(b[metric]) - num(a[metric]));
-
-  table(
-    "rankingTable",
-    ["順位", "選手", "背番号", "出場", "PTS平均", "REB", "AST", "STL", "BLK", "EFF平均", "選択項目"],
-    sorted.map((r, i) => [
-      i + 1,
-      r["選手名"],
-      r["背番号"],
-      r["GP"],
-      r["PTS平均"],
-      r["REB"],
-      r["AST"],
-      r["STL"],
-      r["BLK"],
-      r["EFF平均"],
-      metric === "FG%" || metric === "3P%" || metric === "FT%"
-        ? pct(r[metric])
-        : r[metric]
-    ])
-  );
-}
-
-// 個人成績
+// 選手別スタッツ
 function renderPlayer() {
   const name = $("playerSelect").value;
-  const summary = $("playerSummary");
 
-  summary.innerHTML = "";
+  $("playerSummary").innerHTML = "";
 
   if (!name) {
-    table("playerGames", [], []);
+    makeTable("playerTable", [], []);
     return;
   }
 
@@ -358,75 +697,106 @@ function renderPlayer() {
       ["EFF平均", s["EFF平均"]]
     ];
 
-    summary.innerHTML =
-      '<div class="cards">' +
-      metrics.map(m =>
-        `<div class="card">
-          <div class="label">${m[0]}</div>
-          <div class="value">${cell(m[1])}</div>
-        </div>`
-      ).join("") +
-      '</div>';
+    $("playerSummary").innerHTML = metrics.map(m =>
+      `<div class="player-stat">
+        <small>${m[0]}</small>
+        <strong>${m[1] || "—"}</strong>
+      </div>`
+    ).join("");
   }
 
   const rows = individualRows.filter(r => r["選手名"] === name);
 
-  table(
-    "playerGames",
+  makeTable(
+    "playerTable",
     ["日付", "対戦相手", "PTS", "REB", "AST", "STL", "BLK", "TO", "FG%", "3P%", "FT%", "EFF"],
     rows.map(r => [
-      r["試合日"],
-      r["対戦相手"],
-      r["PTS"],
-      r["REB"],
-      r["AST"],
-      r["STL"],
-      r["BLK"],
-      r["TO"],
-      pct(r["FG%"]),
-      pct(r["3P%"]),
-      pct(r["FT%"]),
-      r["EFF"]
+      r["試合日"], r["対戦相手"], r["PTS"], r["REB"],
+      r["AST"], r["STL"], r["BLK"], r["TO"],
+      pct(r["FG%"]), pct(r["3P%"]), pct(r["FT%"]), r["EFF"]
     ])
   );
 }
 
-// 試合一覧
+// 試合別スタッツ
 function renderGames() {
   const rows = gameRows.filter(g => g["対戦相手"]);
 
-  table(
+  makeTable(
     "gamesTable",
     ["日付", "大会", "対戦相手", "東野得点", "相手得点", "会場", "備考"],
     rows.map(g => [
-      g["試合日"],
-      g["大会名"],
-      g["対戦相手"],
-      g["東野得点"],
-      g["相手得点"],
-      g["会場"],
-      g["備考"]
+      g["試合日"], g["大会名"], g["対戦相手"],
+      g["東野得点"], g["相手得点"], g["会場"], g["備考"]
     ])
   );
 }
 
-// メニュー切り替え
-document.querySelectorAll(".tab").forEach(btn =>
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(b =>
-      b.classList.toggle("active", b === btn)
-    );
+// ランキング
+function renderRanking() {
+  const metric = $("rankMetric").value;
 
-    document.querySelectorAll(".panel").forEach(p =>
-      p.classList.toggle("active", p.id === btn.dataset.tab)
-    );
-  })
-);
+  const sorted = seasonRows
+    .filter(r => r["選手名"])
+    .slice()
+    .sort((a, b) => num(b[metric]) - num(a[metric]));
 
-$("rankMetric").addEventListener("change", renderRanking);
+  makeTable(
+    "rankingTable",
+    ["順位", "選手", "背番号", "出場", "PTS平均", "REB", "AST", "STL", "BLK", "EFF平均", "選択項目"],
+    sorted.map((r, i) => [
+      i + 1, r["選手名"], r["背番号"], r["GP"],
+      r["PTS平均"], r["REB"], r["AST"], r["STL"],
+      r["BLK"], r["EFF平均"],
+      ["FG%", "3P%", "FT%"].includes(metric) ? pct(r[metric]) : r[metric]
+    ])
+  );
+}
+
+// チーム得点の推移
+function renderTrend() {
+  const rows = gameRows.filter(g => g["対戦相手"]);
+
+  makeTable(
+    "trendTable",
+    ["日付", "対戦相手", "東野得点", "相手得点", "得失点差"],
+    rows.map(g => [
+      g["試合日"],
+      g["対戦相手"],
+      g["東野得点"],
+      g["相手得点"],
+      num(g["東野得点"]) - num(g["相手得点"])
+    ])
+  );
+}
+
+// 選手別パフォーマンス推移
+function renderPlayerTrend() {
+  const name = $("trendPlayer").value;
+
+  if (!name) {
+    makeTable("trendPlayerTable", [], []);
+    return;
+  }
+
+  const rows = individualRows.filter(r => r["選手名"] === name);
+
+  makeTable(
+    "trendPlayerTable",
+    ["日付", "対戦相手", "PTS", "REB", "AST", "STL", "BLK", "EFF"],
+    rows.map(r => [
+      r["試合日"], r["対戦相手"], r["PTS"],
+      r["REB"], r["AST"], r["STL"], r["BLK"], r["EFF"]
+    ])
+  );
+}
+
+// イベント
 $("playerSelect").addEventListener("change", renderPlayer);
+$("rankMetric").addEventListener("change", renderRanking);
+$("trendPlayer").addEventListener("change", renderPlayerTrend);
 
-// データ読み込み
+// 初期読み込み
 (async function init() {
   try {
     [seasonRows, individualRows, gameRows] = await Promise.all([
@@ -435,31 +805,24 @@ $("playerSelect").addEventListener("change", renderPlayer);
       fetchSheet(CSV.games)
     ]);
 
-    const names = [
-      ...new Set(seasonRows.map(r => r["選手名"]).filter(Boolean))
-    ];
-
-    $("playerSelect").innerHTML =
-      '<option value="">選手を選択してください</option>' +
-      names.map(n =>
-        `<option value="${n.replace(/&/g, "&amp;").replace(/"/g, "&quot;")}">${n}</option>`
-      ).join("");
-
+    setupPlayers();
     renderTeam();
-    renderRanking();
     renderGames();
+    renderRanking();
+    renderTrend();
 
     $("status").textContent =
-      `データ更新完了｜累計 ${seasonRows.length}名・個人成績 ${individualRows.length}件・試合 ${gameRows.filter(g => g["対戦相手"]).length}件`;
+      `データ更新完了｜選手 ${seasonRows.length}名・個人成績 ${individualRows.length}件・試合 ${gameRows.length}件`;
 
   } catch (e) {
     $("status").textContent =
       "データを読み込めませんでした：" + e.message +
-      "（各シートのCSV公開設定を確認してください）";
+      "。スプレッドシートの公開設定を確認してください。";
 
     console.error(e);
   }
 })();
+
 </script>
 </body>
 </html>
