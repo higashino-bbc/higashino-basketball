@@ -123,7 +123,7 @@
     });
     setLink("#youtubeLink", links.youtube);
     setLink("#instagramLink", links.instagram);
-    setLink("#experienceLink", links.experience, "mailto:REPLACE_WITH_SCHOOL_CONTACT");
+    setLink("#experienceLink", "https://forms.gle/dcEuaqewwdvwBt9p8", "https://forms.gle/dcEuaqewwdvwBt9p8");
     $("#year").textContent = new Date().getFullYear();
   }
 
