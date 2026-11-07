@@ -782,15 +782,115 @@ function renderPlayer() {
 
 // 試合別スタッツ
 // 試合別スタッツ
+// 試合別スタッツ
 function renderGames() {
+  const target = $("gamesTable");
+  target.innerHTML = "";
+
   const rows = gameRows.filter(g => g["対戦相手"]);
 
+  $("gameDetail").style.display = "none";
+
+  const headers = [
+    "日付", "大会", "対戦相手",
+    "東野得点", "相手得点", "結果", "詳細"
+  ];
+
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+
+  headers.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    headRow.appendChild(th);
+  });
+
+  thead.appendChild(headRow);
+  target.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+
+  rows.forEach(g => {
+    const tr = document.createElement("tr");
+
+    const a = num(g["東野得点"]);
+    const b = num(g["相手得点"]);
+
+    const result = a > b ? "WIN" : a < b ? "LOSE" : "DRAW";
+
+    const values = [
+      g["試合日"],
+      g["大会名"],
+      g["対戦相手"],
+      g["東野得点"],
+      g["相手得点"],
+      result,
+      "詳細を見る ›"
+    ];
+
+    values.forEach(v => {
+      const td = document.createElement("td");
+      td.textContent = v || "—";
+      tr.appendChild(td);
+    });
+
+    // ここが試合をクリックしたときの処理
+    tr.style.cursor = "pointer";
+
+    tr.addEventListener("click", function() {
+      document.querySelectorAll("#gamesTable tbody tr")
+        .forEach(row => row.classList.remove("selected"));
+
+      tr.classList.add("selected");
+
+      renderGameDetail(g);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  target.appendChild(tbody);
+}// 試合詳細表示
+
+// 試合詳細表示
+function renderGameDetail(g) {
+  const detail = $("gameDetail");
+  detail.style.display = "block";
+
+  const rows = individualRows.filter(r =>
+    String(r["試合日"]).trim() === String(g["試合日"]).trim() &&
+    String(r["対戦相手"]).trim() === String(g["対戦相手"]).trim()
+  );
+
+  const a = num(g["東野得点"]);
+  const b = num(g["相手得点"]);
+  const result = a > b ? "WIN" : a < b ? "LOSE" : "DRAW";
+
+  $("gameDetailTitle").textContent =
+    g["試合日"] + "  " + g["対戦相手"];
+
+  $("gameDetailSummary").innerHTML = `
+    <div class="player-stat">
+      <small>東野得点</small>
+      <strong>${a}</strong>
+    </div>
+    <div class="player-stat">
+      <small>相手得点</small>
+      <strong>${b}</strong>
+    </div>
+    <div class="player-stat">
+      <small>RESULT</small>
+      <strong>${result}</strong>
+    </div>
+  `;
+
   makeTable(
-    "gamesTable",
-    ["日付", "大会", "対戦相手", "東野得点", "相手得点", "会場", "備考"],
-    rows.map(g => [
-      g["試合日"], g["大会名"], g["対戦相手"],
-      g["東野得点"], g["相手得点"], g["会場"], g["備考"]
+    "gameDetailTable",
+    ["選手", "背番号", "PTS", "REB", "AST", "STL", "BLK", "TO", "FG%", "3P%", "FT%", "EFF"],
+    rows.map(r => [
+      r["選手名"], r["背番号"], r["PTS"], r["REB"],
+      r["AST"], r["STL"], r["BLK"], r["TO"],
+      pct(r["FG%"]), pct(r["3P%"]), pct(r["FT%"]), r["EFF"]
     ])
   );
 }
