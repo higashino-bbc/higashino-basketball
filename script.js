@@ -123,7 +123,12 @@
     });
     setLink("#youtubeLink", links.youtube);
     setLink("#instagramLink", links.instagram);
-    setLink("#experienceLink", "https://forms.gle/dcEuaqewwdvwBt9p8", "https://forms.gle/dcEuaqewwdvwBt9p8");
+    const experienceLink = $("#experienceLink");
+if (experienceLink) {
+  experienceLink.href = "https://forms.gle/dcEuaqewwdvwBt9p8";
+  experienceLink.target = "_blank";
+  experienceLink.rel = "noopener noreferrer";
+}
     $("#year").textContent = new Date().getFullYear();
   }
 
