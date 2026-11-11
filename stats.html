@@ -737,6 +737,7 @@ function setupPlayers() {
   });
 }
 
+
 // 選手別スタッツ
 function renderPlayer() {
   const name = $("playerSelect").value;
@@ -747,6 +748,69 @@ function renderPlayer() {
     makeTable("playerTable", [], []);
     return;
   }
+
+  const rows = individualRows.filter(r => r["選手名"] === name);
+  const games = rows.length;
+
+  if (games > 0) {
+    const total = key =>
+      rows.reduce((sum, r) => sum + num(r[key]), 0);
+
+    const average = key =>
+      (total(key) / games).toFixed(1);
+
+    const metrics = [
+      {
+        title: "TOTAL STATS｜累計",
+        items: [
+          ["出場試合", games],
+          ["総得点", total("PTS")],
+          ["総REB", total("REB")],
+          ["総AST", total("AST")],
+          ["総STL", total("STL")],
+          ["総BLK", total("BLK")],
+          ["総TO", total("TO")],
+          ["総EFF", total("EFF")]
+        ]
+      },
+      {
+        title: "AVERAGE STATS｜1試合平均",
+        items: [
+          ["平均得点", average("PTS")],
+          ["平均REB", average("REB")],
+          ["平均AST", average("AST")],
+          ["平均STL", average("STL")],
+          ["平均BLK", average("BLK")],
+          ["平均TO", average("TO")],
+          ["平均EFF", average("EFF")]
+        ]
+      }
+    ];
+
+    $("playerSummary").innerHTML = metrics.map(group => `
+      <div style="grid-column:1/-1; color:var(--blue); font-weight:bold; margin-top:12px;">
+        ${group.title}
+      </div>
+      ${group.items.map(m => `
+        <div class="player-stat">
+          <small>${m[0]}</small>
+          <strong>${m[1]}</strong>
+        </div>
+      `).join("")}
+    `).join("");
+  }
+
+  // 試合ごとの成績
+  makeTable(
+    "playerTable",
+    ["日付", "対戦相手", "PTS", "REB", "AST", "STL", "BLK", "TO", "FG%", "3P%", "FT%", "EFF"],
+    rows.map(r => [
+      r["試合日"], r["対戦相手"], r["PTS"], r["REB"],
+      r["AST"], r["STL"], r["BLK"], r["TO"],
+      pct(r["FG%"]), pct(r["3P%"]), pct(r["FT%"]), r["EFF"]
+    ])
+  );
+}
 
   const s = seasonRows.find(r => r["選手名"] === name);
 
