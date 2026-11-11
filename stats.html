@@ -793,24 +793,7 @@ function renderPlayer() {
       </div>
       ${group.items.map(m => `
         <div class="player-stat">
-          <small>${m[0]}</small>
-          <strong>${m[1]}</strong>
-        </div>
-      `).join("")}
-    `).join("");
-  }
-
-  // 試合ごとの成績
-  makeTable(
-    "playerTable",
-    ["日付", "対戦相手", "PTS", "REB", "AST", "STL", "BLK", "TO", "FG%", "3P%", "FT%", "EFF"],
-    rows.map(r => [
-      r["試合日"], r["対戦相手"], r["PTS"], r["REB"],
-      r["AST"], r["STL"], r["BLK"], r["TO"],
-      pct(r["FG%"]), pct(r["3P%"]), pct(r["FT%"]), r["EFF"]
-    ])
-  );
-}
+       }
 
   const s = seasonRows.find(r => r["選手名"] === name);
 
